@@ -47,8 +47,6 @@ class CreateBox():
                 for j in range(1,width_num+1):
                     bottom_box=self.__create_bottom_box()
                     top_box+=Pos((2*i-1)*wall_clearance+(i-1)*self.__foot_length,Y=(2*j-1)*wall_clearance+(j-1)*self.__foot_width)*bottom_box
-                    print('i:'+str(i))
-                    print('j:'+str(j))
             return top_box
         return None
     def __create_top_outer_box(self,length,width,height):
@@ -87,7 +85,7 @@ if __name__=="__main__":
         width_divisions=5,
         height_divisions=2,
         corner_R=4)
-    ex=box.create_box(4,4)
+    ex=box.create_box(3,4)
     outer_box=box.create_outer_box()
     #face2=ex.faces().filter_by(Axis.Z).sort_by()[0].edges()
     show_all()
