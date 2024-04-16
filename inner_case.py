@@ -42,22 +42,38 @@ class CreateBox():
                 width_num,
                 height_num
             )
-            top_box=outer_box[0]-inner_box[0]
+            #台形の切り欠きを追加
             cutout_line=[
                 (0,inner_box[2]/2-10,inner_box[3]-10+self.__foot_thickness),
                 (0,inner_box[2]/2+10,inner_box[3]-10+self.__foot_thickness),
                 (0,inner_box[2]/2+11.8,inner_box[3]+self.__foot_thickness),
                 (0,inner_box[2]/2-11.8,inner_box[3]+self.__foot_thickness),
+                (0,inner_box[2]/2-10,inner_box[3]-10+self.__foot_thickness)
             ]
             l1=Polyline(*cutout_line)
-            line =Line(l1@1,l1@0)
-            #face = make_face(l1)
+            face = make_face(Plane.XY *l1)
+            cutout_box=extrude(face,self.__length)
+            top_box=outer_box[0]
+            #切り抜く
+            box=top_box-cutout_box
+            #切り欠き部分のあたるところにRつける
+            l2=box.edges().group_by(Axis.Z)[-3].filter_by(Axis.X)
+            l3=box.edges().group_by(Axis.Z)[-1].filter_by(Axis.X)[1:3]
+            box=fillet(l2+l3,2)
+            #中をくりぬく
+            box-=inner_box[0]
+            #壁のあたり面をR面取り
+            box=fillet(box.edges().group_by(Axis.Z)[-1],self.__thickness/4)
+            
+            #足を追加
             wall_clearance=self.__thickness+self.__clearance
+            bottom_box=self.__create_bottom_box()
             for i in range(1,length_num+1):
                 for j in range(1,width_num+1):
-                    bottom_box=self.__create_bottom_box()
-                    top_box+=Pos((2*i-1)*wall_clearance+(i-1)*self.__foot_length,Y=(2*j-1)*wall_clearance+(j-1)*self.__foot_width)*bottom_box
-            return (top_box,l1)
+                    box+=Pos((2*i-1)*wall_clearance+(i-1)*self.__foot_length,Y=(2*j-1)*wall_clearance+(j-1)*self.__foot_width)*bottom_box
+            #topf=box.faces().filter_by(Plane.YX).last
+            #box=offset(box,amount=-self.__thickness,openings=topf)
+            return (box)
         return None
     def __create_top_outer_box(self,length_num,width_num,height_num):
         length=self.__min_length*length_num
