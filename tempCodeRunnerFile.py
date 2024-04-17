@@ -1,1 +1,0 @@
-(self.__min_length-(self.__thickness*2)-(self.__clearance*2)
