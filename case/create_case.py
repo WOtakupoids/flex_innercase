@@ -90,9 +90,11 @@ class CreateBox():
             #足を追加
             wall_clearance=self.__thickness+self.clearance
             bottom_box=self.__foot_box
+            foot_box:list=[]
             for i in range(1,length_num+1):
                 for j in range(1,width_num+1):
-                    box+=Pos((2*i-1)*wall_clearance+(i-1)*self.__foot_length,Y=(2*j-1)*wall_clearance+(j-1)*self.__foot_width)*bottom_box
+                    foot_box.append(Pos((2*i-1)*wall_clearance+(i-1)*self.__foot_length,Y=(2*j-1)*wall_clearance+(j-1)*self.__foot_width)*bottom_box)
+            box+=foot_box
             #topf=box.faces().filter_by(Plane.YX).last
             #box=offset(box,amount=-self.__thickness,openings=topf)
             box_info=InnerBox()
